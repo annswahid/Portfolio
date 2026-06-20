@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogIn, LogOut, User, LayoutDashboard } from 'lucide-react';
+import { LogIn, LogOut, User, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Link, useNavigate } from 'react-router';
+import { PremiumPillButton } from '@/components/ui/PremiumPillButton';
+import { MenuButton } from '@/components/ui/MenuButton';
 
 const navLinks = [
   { label: 'Home', href: '#hero' },
@@ -14,7 +16,7 @@ const navLinks = [
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ export default function Navigation() {
   }, []);
 
   const scrollToSection = (href: string) => {
-    setMobileOpen(false);
+    setMenuOpen(false);
     if (href.startsWith('#')) {
       const el = document.querySelector(href);
       if (el) {
@@ -42,13 +44,9 @@ export default function Navigation() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'bg-black/50 backdrop-blur-xl border-b border-white/5'
-            : 'bg-transparent'
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent pointer-events-none"
       >
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between pointer-events-auto">
           {/* Logo */}
           <a
             href="#hero"
@@ -56,143 +54,172 @@ export default function Navigation() {
               e.preventDefault();
               scrollToSection('#hero');
             }}
-            className="text-xl font-bold text-white"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-2xl font-bold text-white tracking-tight flex gap-1 items-center"
           >
-            Portfolio<span className="text-white">.</span>
+            <div className="grid grid-cols-2 gap-[2px] mr-2">
+              <div className="w-2.5 h-2.5 rounded-tl-sm bg-white"></div>
+              <div className="w-2.5 h-2.5 rounded-tr-full bg-white"></div>
+              <div className="w-2.5 h-2.5 rounded-bl-full bg-white"></div>
+              <div className="w-2.5 h-2.5 rounded-br-sm bg-white"></div>
+            </div>
+            Portfolio
           </a>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.href);
-                }}
-                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+          {/* Right Actions */}
+          <div className="flex items-center gap-6 md:gap-8">
+            <div className="hidden sm:block">
+              <PremiumPillButton 
+                onClick={() => scrollToSection('#contact')}
               >
-                {link.label}
-              </a>
-            ))}
+                Let's work
+              </PremiumPillButton>
+            </div>
+            
+            <MenuButton 
+              isOpen={menuOpen} 
+              onClick={() => setMenuOpen(!menuOpen)} 
+            />
           </div>
-
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            {isAuthenticated ? (
-              <>
-                {user?.role === 'admin' && (
-                  <button
-                    onClick={() => navigate('/admin')}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Admin
-                  </button>
-                )}
-                <div className="flex items-center gap-2 px-4 py-2 glass rounded-lg">
-                  <User className="w-4 h-4 text-white" />
-                  <span className="text-sm text-gray-300">{user?.name || 'User'}</span>
-                </div>
-                <button
-                  onClick={logout}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
-              >
-                <LogIn className="w-4 h-4" />
-                Sign In
-              </Link>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-gray-400 hover:text-white"
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
+      {/* Fullscreen Menu */}
       <AnimatePresence>
-        {mobileOpen && (
+        {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: "-100%" }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-black/90 backdrop-blur-xl pt-20 px-6 md:hidden"
+            exit={{ opacity: 0, y: "-100%" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-40 bg-[#111] pt-32 px-6 md:px-12 flex flex-col justify-between overflow-hidden"
           >
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(link.href);
-                  }}
-                  className="py-3 text-lg text-gray-300 hover:text-white border-b border-white/5"
-                >
-                  {link.label}
-                </a>
-              ))}
-
-              <div className="mt-6 pt-6 border-t border-white/10">
-                {isAuthenticated ? (
-                  <div className="space-y-3">
-                    {user?.role === 'admin' && (
-                      <button
-                        onClick={() => {
-                          setMobileOpen(false);
-                          navigate('/admin');
+            <div className="max-w-7xl mx-auto w-full h-full relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 h-full pb-12">
+                
+                {/* Left Col: Nav Links & Drag Card */}
+                <div className="md:col-span-4 flex flex-col justify-between h-full">
+                  <div className="flex flex-col gap-6 mt-4 md:mt-12">
+                    {navLinks.map((link, i) => (
+                      <motion.a
+                        key={link.label}
+                        href={link.href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          scrollToSection(link.href);
                         }}
-                        className="flex items-center gap-2 py-3 text-gray-300 hover:text-white w-full"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-300 hover:text-white transition-colors tracking-tight"
                       >
-                        <LayoutDashboard className="w-5 h-5" />
-                        Admin Dashboard
-                      </button>
-                    )}
-                    <div className="flex items-center gap-3 py-3">
-                      <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">{user?.name}</div>
-                        <div className="text-sm text-gray-500">{user?.email}</div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setMobileOpen(false);
-                        logout();
-                      }}
-                      className="flex items-center gap-2 py-3 text-white w-full"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      Logout
-                    </button>
+                        {link.label}
+                      </motion.a>
+                    ))}
                   </div>
-                ) : (
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-2 py-3 bg-purple-600 text-white rounded-lg"
+
+                  {/* Drag Card Placeholder */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="relative w-64 h-36 rounded-2xl overflow-hidden mt-12 bg-gradient-to-tr from-orange-400 to-purple-600 shadow-2xl hidden md:block"
                   >
-                    <LogIn className="w-5 h-5" />
-                    Sign In
-                  </Link>
-                )}
+                    <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px]" />
+                    <div className="absolute bottom-4 right-4 bg-white text-black font-medium text-sm px-5 py-2.5 rounded-full cursor-grab hover:scale-105 transition-transform shadow-lg">
+                      Drag
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Middle Col: Socials & Auth */}
+                <div className="md:col-span-3 flex flex-col justify-between mt-8 md:mt-12">
+                  <div className="flex flex-col gap-3">
+                    {['Instagram', 'Dribbble', 'LinkedIn'].map((social, i) => (
+                      <motion.a
+                        key={social}
+                        href="#"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 + i * 0.1 }}
+                        className="text-lg md:text-xl font-normal text-gray-300 hover:text-white transition-colors"
+                      >
+                        {social}
+                      </motion.a>
+                    ))}
+                    <motion.a
+                      href="mailto:hello@portfolio.studio"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.7 }}
+                      className="text-lg md:text-xl font-normal text-gray-300 hover:text-white transition-colors mt-4"
+                    >
+                      hello@portfolio.studio
+                    </motion.a>
+                  </div>
+
+                  {/* Auth Section inserted tastefully */}
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-12"
+                  >
+                    {isAuthenticated ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <div className="text-white text-sm font-medium">{user?.name}</div>
+                            <div className="text-gray-400 text-xs">{user?.email}</div>
+                          </div>
+                        </div>
+                        {user?.role === 'admin' && (
+                          <button
+                            onClick={() => {
+                              setMenuOpen(false);
+                              navigate('/admin');
+                            }}
+                            className="text-left text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                          >
+                            <LayoutDashboard className="w-4 h-4" /> Admin
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            setMenuOpen(false);
+                            logout();
+                          }}
+                          className="text-left text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                        >
+                          <LogOut className="w-4 h-4" /> Logout
+                        </button>
+                      </div>
+                    ) : (
+                      <Link
+                        to="/login"
+                        onClick={() => setMenuOpen(false)}
+                        className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-lg"
+                      >
+                        <LogIn className="w-5 h-5" /> Sign In
+                      </Link>
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Right Col: Giant Typography */}
+                <div className="md:col-span-5 hidden md:flex items-center justify-end h-full">
+                  <motion.h1 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5, duration: 0.8 }}
+                    className="text-[12vw] leading-[0.8] font-black text-white tracking-tighter text-right select-none"
+                  >
+                    PORT<br/>FOLIO
+                  </motion.h1>
+                </div>
+
               </div>
             </div>
           </motion.div>

@@ -5,6 +5,7 @@ import About from '@/sections/About';
 import Skills from '@/sections/Skills';
 import Projects from '@/sections/Projects';
 import Contact from '@/sections/Contact';
+import FAQ from '@/sections/FAQ';
 import Footer from '@/components/Footer';
 import ChatWidget from '@/components/ChatWidget';
 
@@ -18,6 +19,7 @@ export default function Home() {
         <About />
         <Skills />
         <Projects />
+        <FAQ />
         <Contact />
       </main>
       <Footer />

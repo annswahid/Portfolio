@@ -24,25 +24,15 @@ export default function Hero() {
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      <div ref={heroRef} className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-8"
-        >
-          <Sparkles className="w-4 h-4 text-white" />
-          <span className="text-sm text-gray-300">Available for freelance work</span>
-        </motion.div>
+      <div ref={heroRef} className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 md:mt-32">
+
 
         {/* Main Heading */}
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight mb-6"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-6"
         >
           <span className="text-white">Creative</span>{' '}
           <span className="text-white">Developer</span>
