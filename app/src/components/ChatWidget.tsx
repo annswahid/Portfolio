@@ -91,11 +91,10 @@ export default function ChatWidget() {
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 1 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${
-          isOpen
+        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${isOpen
             ? 'bg-gray-700 hover:bg-gray-600'
             : 'bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700'
-        }`}
+          }`}
       >
         {isOpen ? (
           <X className="w-6 h-6 text-white" />
@@ -138,11 +137,10 @@ export default function ChatWidget() {
                   className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
                   <div
-                    className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center ${
-                      msg.role === 'assistant'
+                    className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center ${msg.role === 'assistant'
                         ? 'bg-purple-500/20'
                         : 'bg-cyan-500/20'
-                    }`}
+                      }`}
                   >
                     {msg.role === 'assistant' ? (
                       <Bot className="w-3.5 h-3.5 text-white" />
@@ -151,11 +149,10 @@ export default function ChatWidget() {
                     )}
                   </div>
                   <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                      msg.role === 'assistant'
+                    className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${msg.role === 'assistant'
                         ? 'bg-white/5 text-gray-300 rounded-tl-sm'
                         : 'bg-purple-600/30 text-white rounded-tr-sm'
-                    }`}
+                      }`}
                   >
                     {msg.content}
                   </div>
