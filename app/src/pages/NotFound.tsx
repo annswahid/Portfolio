@@ -18,8 +18,7 @@ export default function NotFound() {
           <Sparkles className="w-10 h-10 text-white" />
         </div>
         <h1
-          className="text-7xl sm:text-9xl font-black text-white mb-4"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          className="text-7xl sm:text-9xl font-black text-white mb-4 font-sans"
         >
           404
         </h1>

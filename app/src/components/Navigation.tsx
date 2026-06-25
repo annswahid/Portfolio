@@ -5,12 +5,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { Link, useNavigate } from 'react-router';
 import { PremiumPillButton } from '@/components/ui/PremiumPillButton';
 import { MenuButton } from '@/components/ui/MenuButton';
+import { useBooking } from '@/providers/BookingProvider';
 
 const navLinks = [
   { label: 'Home', href: '#hero' },
   { label: 'About', href: '#about' },
   { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
+  { label: 'Services', href: '#services' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -19,6 +21,7 @@ export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const { openBooking } = useBooking();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,14 +65,15 @@ export default function Navigation() {
               <div className="w-2.5 h-2.5 rounded-bl-full bg-white"></div>
               <div className="w-2.5 h-2.5 rounded-br-sm bg-white"></div>
             </div>
-            Portfolio
+            Anas
           </a>
 
           {/* Right Actions */}
           <div className="flex items-center gap-6 md:gap-8">
             <div className="hidden sm:block">
               <PremiumPillButton 
-                onClick={() => scrollToSection('#contact')}
+                onClick={openBooking}
+                coloredHover
               >
                 Let's work
               </PremiumPillButton>
@@ -105,7 +109,12 @@ export default function Navigation() {
                         href={link.href}
                         onClick={(e) => {
                           e.preventDefault();
-                          scrollToSection(link.href);
+                          if (link.href === '#contact') {
+                            setMenuOpen(false);
+                            openBooking();
+                          } else {
+                            scrollToSection(link.href);
+                          }
                         }}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}

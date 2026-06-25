@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { ExternalLink, Github, ArrowUpRight } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
+import { PremiumPillButton } from '@/components/ui/PremiumPillButton';
 
 const projects = [
   {
@@ -65,251 +66,177 @@ const projects = [
   },
 ];
 
-function TiltCard({
-  children,
-  accent,
-  index,
-  isInView,
-}: {
-  children: React.ReactNode;
-  accent: string;
-  index: number;
-  isInView: boolean;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [shimmerPos, setShimmerPos] = useState({ x: 50, y: 50 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) / (rect.width / 2);
-    const dy = (e.clientY - cy) / (rect.height / 2);
-    setTilt({ x: dy * -12, y: dx * 12 });
-
-    const px = ((e.clientX - rect.left) / rect.width) * 100;
-    const py = ((e.clientY - rect.top) / rect.height) * 100;
-    setShimmerPos({ x: px, y: py });
-  };
-
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setTilt({ x: 0, y: 0 });
-  };
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay: index * 0.1, ease: 'easeOut' }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        transform: isHovered
-          ? `perspective(800px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(1.04)`
-          : 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)',
-        transition: isHovered
-          ? 'transform 0.05s ease-out'
-          : 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)',
-        position: 'relative',
-        borderRadius: '1rem',
-        cursor: 'pointer',
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '1rem',
-          padding: '1.5px',
-          background: isHovered
-            ? `linear-gradient(135deg, ${accent}, transparent, ${accent}88, transparent, ${accent})`
-            : 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
-          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-          WebkitMaskComposite: 'xor',
-          maskComposite: 'exclude',
-          transition: 'background 0.4s ease',
-          backgroundSize: isHovered ? '300% 300%' : '100% 100%',
-          animation: isHovered ? 'borderSpin 2s linear infinite' : 'none',
-          pointerEvents: 'none',
-          zIndex: 2,
-        }}
-      />
-
-      <div
-        style={{
-          position: 'absolute',
-          inset: '-2px',
-          borderRadius: '1.15rem',
-          background: `radial-gradient(ellipse at center, ${accent}33, transparent 70%)`,
-          opacity: isHovered ? 1 : 0,
-          transition: 'opacity 0.4s ease',
-          filter: 'blur(12px)',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '1rem',
-          background: isHovered
-            ? `radial-gradient(circle at ${shimmerPos.x}% ${shimmerPos.y}%, rgba(255,255,255,0.12) 0%, transparent 60%)`
-            : 'transparent',
-          transition: 'background 0.05s ease',
-          pointerEvents: 'none',
-          zIndex: 2,
-        }}
-      />
-
-      <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
-    </motion.div>
-  );
-}
-
 export default function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
+
+  const displayedProjects = showAll ? projects : projects.slice(0, 3);
 
   return (
     <>
-      <style>{`
-        @keyframes borderSpin {
-          0%   { background-position: 0% 50%; }
-          50%  { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes tagPop {
-          0%   { opacity: 0; transform: translateY(6px) scale(0.85); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-      `}</style>
-
-      <section id="projects" className="relative z-10 py-24 px-4" ref={ref}>
+      <section id="projects" className="relative z-10 py-24 md:py-32 px-6" ref={ref}>
         <div className="max-w-6xl mx-auto">
+          {/* Giant Section Title */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full select-none pointer-events-none overflow-hidden mb-12 sm:mb-16"
           >
-            <span className="text-purple-400 font-medium tracking-wide uppercase text-sm">
-              Portfolio
-            </span>
-            <h2
-              className="text-4xl sm:text-5xl font-bold mt-3 text-white"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Projects</span>
+            <h2 className="text-[12vw] font-black tracking-tighter text-white/10 uppercase leading-none">
+              PROJECTS
             </h2>
-            <p className="text-gray-400 mt-4 max-w-xl mx-auto">
-              A curated selection of projects showcasing my expertise in design and development
-            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
-            {projects.map((project, i) => (
-              <TiltCard key={i} accent={project.accent} index={i} isInView={isInView}>
-                <div
-                  className="glass rounded-2xl overflow-hidden"
+          {/* Section Header */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20 md:mb-28">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-6"
+            >
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white font-sans leading-[1.15]">
+                Featured <br className="hidden sm:block" /> Digital Works
+              </h3>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-6 flex items-end"
+            >
+              <p className="text-base sm:text-lg text-neutral-400 font-light leading-relaxed max-w-xl font-sans">
+                A curated selection of flagship projects showcasing my expertise in full-stack architecture, AI integration, and interactive 3D design.
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Vertical alternating list of browser mockups */}
+          <div className="space-y-24 md:space-y-36">
+            {displayedProjects.map((project, i) => {
+              const isEven = i % 2 === 0;
+              const isHovered = hoveredIndex === i;
+              
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className={`flex flex-col lg:flex-row gap-8 lg:gap-16 items-center ${
+                    isEven ? '' : 'lg:flex-row-reverse'
+                  }`}
                   onMouseEnter={() => setHoveredIndex(i)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  <div className="relative aspect-video overflow-hidden">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700"
+                  {/* Left/Right Column: Browser Mockup Card */}
+                  <div className="w-full lg:w-7/12">
+                    <div 
+                      className="relative group/mockup rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:border-white/20"
                       style={{
-                        transform: hoveredIndex === i ? 'scale(1.12)' : 'scale(1)',
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                    <motion.div
-                      animate={{ opacity: hoveredIndex === i ? 1 : 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="absolute inset-0 flex items-center justify-center gap-4"
-                      style={{
-                        background: `linear-gradient(135deg, ${project.accent}22, rgba(0,0,0,0.5))`,
-                        backdropFilter: 'blur(4px)',
+                        boxShadow: isHovered 
+                          ? `0 25px 50px -12px ${project.accent}22` 
+                          : '0 25px 50px -12px rgba(0,0,0,0.5)'
                       }}
                     >
-                      {[
-                        { href: project.link, Icon: ExternalLink, label: 'Live' },
-                        { href: project.github, Icon: Github, label: 'Code' },
-                      ].map(({ href, Icon, label }) => (
-                        <motion.a
-                          key={label}
-                          href={href}
-                          animate={{ y: hoveredIndex === i ? 0 : 16, opacity: hoveredIndex === i ? 1 : 0 }}
-                          transition={{ duration: 0.3, delay: label === 'Code' ? 0.05 : 0 }}
-                          onClick={(e) => e.preventDefault()}
-                          className="flex flex-col items-center gap-1 group/btn"
-                        >
-                          <span className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/20 transition-all hover:scale-110">
-                            <Icon className="w-5 h-5 text-white" />
-                          </span>
-                          <span className="text-xs text-white/70">{label}</span>
-                        </motion.a>
-                      ))}
-                    </motion.div>
+                      {/* Browser Header Bar */}
+                      <div className="flex items-center justify-between px-4 py-3 bg-neutral-100 border-b border-neutral-200">
+                        {/* Dots */}
+                        <div className="flex gap-1.5 shrink-0">
+                          <div className="w-2.5 h-2.5 rounded-full bg-neutral-300" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-neutral-300" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-neutral-300" />
+                        </div>
+                        {/* Address Bar */}
+                        <div className="w-3/5 py-1 px-3 bg-white border border-neutral-200 rounded-md text-[10px] text-neutral-400 text-center font-mono truncate select-none transition-colors group-hover/mockup:text-neutral-500">
+                          https://{project.title.toLowerCase().replace(/\s+/g, '')}.dev
+                        </div>
+                        {/* Empty Space for alignment */}
+                        <div className="w-10" />
+                      </div>
+
+                      {/* Image container inside the browser window */}
+                      <div className="relative aspect-[16/10] overflow-hidden bg-[#121212]">
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover/mockup:scale-105"
+                          onError={(e) => {
+                            // If mockup image fails, load a solid colored gradient block
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3
-                        className="text-lg font-bold text-white transition-all duration-300"
-                        style={{ color: hoveredIndex === i ? project.accent : 'white' }}
-                      >
-                        {project.title}
-                      </h3>
-                      <motion.div
-                        animate={{
-                          rotate: hoveredIndex === i ? 45 : 0,
-                          color: hoveredIndex === i ? project.accent : '#6b7280',
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <ArrowUpRight className="w-4 h-4" />
-                      </motion.div>
-                    </div>
-
-                    <p className="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-2">
+                  {/* Left/Right Column: Project Details */}
+                  <div className="w-full lg:w-5/12 space-y-5">
+                    <span 
+                      className="text-xs font-bold uppercase tracking-widest block transition-colors duration-300"
+                      style={{ color: isHovered ? project.accent : '#9ca3af' }}
+                    >
+                      Project 0{i + 1}
+                    </span>
+                    <h3 className="text-3xl font-extrabold tracking-tight text-white font-sans">
+                      {project.title}
+                    </h3>
+                    <p className="text-base text-white/60 font-light leading-relaxed font-sans">
                       {project.description}
                     </p>
 
-                    <div className="flex flex-wrap gap-2">
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 pt-2">
                       {project.tags.map((tag, ti) => (
                         <span
                           key={ti}
-                          className="text-xs px-2.5 py-1 rounded-full border transition-all duration-300"
+                          className="text-xs px-3 py-1 rounded-full border transition-all duration-300"
                           style={{
-                            background: hoveredIndex === i ? `${project.accent}18` : 'rgba(255,255,255,0.04)',
-                            borderColor: hoveredIndex === i ? `${project.accent}55` : 'rgba(255,255,255,0.06)',
-                            color: hoveredIndex === i ? project.accent : '#9ca3af',
-                            animation: hoveredIndex === i
-                              ? `tagPop 0.3s ease forwards ${ti * 0.06}s`
-                              : 'none',
+                            background: isHovered ? `${project.accent}15` : 'rgba(255,255,255,0.04)',
+                            borderColor: isHovered ? `${project.accent}33` : 'rgba(255,255,255,0.08)',
+                            color: isHovered ? project.accent : '#9ca3af',
                           }}
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
+
+                    {/* Action buttons */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
+                      <a
+                        href={project.link}
+                        onClick={(e) => e.preventDefault()}
+                        className="px-6 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition-all flex items-center justify-center gap-2 group/btn shadow-md hover:scale-105 w-full sm:w-auto"
+                      >
+                        Live Preview
+                        <ExternalLink className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
+                      </a>
+                      <a
+                        href={project.github}
+                        onClick={(e) => e.preventDefault()}
+                        className="px-6 py-2.5 rounded-full glass text-white font-semibold text-sm hover:bg-white/10 transition-all flex items-center justify-center gap-2 group/btn hover:scale-105 w-full sm:w-auto"
+                      >
+                        Code
+                        <Github className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" />
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </TiltCard>
-            ))}
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Show All Projects Toggle Button */}
+          <div className="flex justify-center mt-24 md:mt-32">
+            <PremiumPillButton onClick={() => setShowAll(!showAll)}>
+              {showAll ? 'Show Less' : 'Show All Projects'}
+            </PremiumPillButton>
           </div>
         </div>
       </section>

@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { useBooking } from '@/providers/BookingProvider';
 
 export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
+  const { openBooking } = useBooking();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,38 +24,28 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-28 md:pt-36 pb-16 px-6"
     >
-      <div ref={heroRef} className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 md:mt-32">
-
-
+      <div ref={heroRef} className="relative z-10 text-center max-w-6xl mx-auto my-auto">
         {/* Main Heading */}
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-6"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-[7vw] font-black tracking-tighter uppercase leading-[0.92] text-white mb-8 sm:mb-10 select-none"
         >
-          <span className="text-white">Creative</span>{' '}
-          <span className="text-white">Developer</span>
+          <span className="block">Building Digital</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 block">
+            Experiences
+          </span>
+          <span className="block">That Matter</span>
         </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.6 }}
-          className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          I craft immersive digital experiences with cutting-edge web technologies.
-          Turning ideas into elegant, performant, and visually stunning applications.
-        </motion.p>
 
         {/* CTA Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <a
@@ -64,7 +56,11 @@ export default function Hero() {
           </a>
           <a
             href="#contact"
-            className="px-8 py-4 glass rounded-full text-white font-semibold text-lg hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            onClick={(e) => {
+              e.preventDefault();
+              openBooking();
+            }}
+            className="px-8 py-4 glass rounded-full text-white font-semibold text-lg hover:bg-white/10 transition-all duration-300 hover:scale-105 cursor-pointer"
           >
             Get in Touch
           </a>
@@ -74,8 +70,8 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 1.0 }}
-          className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
+          transition={{ duration: 0.7, delay: 0.6 }}
+          className="mt-12 sm:mt-16 grid grid-cols-3 gap-6 sm:gap-8 max-w-lg mx-auto"
         >
           {[
             { value: '5+', label: 'Years Exp.' },
@@ -83,8 +79,8 @@ export default function Hero() {
             { value: '30+', label: 'Clients' },
           ].map((stat, i) => (
             <div key={i} className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold text-white">{stat.value}</div>
-              <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-gray-500 mt-1">{stat.label}</div>
             </div>
           ))}
         </motion.div>
@@ -94,14 +90,14 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none hidden sm:block"
       >
         <motion.div
-          animate={{ y: [0, 10, 0] }}
+          animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <ChevronDown className="w-8 h-8 text-gray-500" />
+          <ChevronDown className="w-6 h-6 text-gray-500" />
         </motion.div>
       </motion.div>
     </section>

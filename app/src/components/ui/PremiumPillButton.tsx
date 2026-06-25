@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 
 interface PremiumPillButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
+  coloredHover?: boolean;
 }
 
 const HOVER_COLORS = [
@@ -10,19 +11,17 @@ const HOVER_COLORS = [
   '#ffb99b', // Peach
 ];
 
-export function PremiumPillButton({ children, className = '', onMouseEnter, onMouseLeave, ...props }: PremiumPillButtonProps) {
-  const [bgColor, setBgColor] = useState(HOVER_COLORS[0]);
+export function PremiumPillButton({ children, className = '', coloredHover = false, onMouseEnter, onMouseLeave, ...props }: PremiumPillButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [origin, setOrigin] = useState<'left' | 'right'>('left');
-  const colorIndexRef = useRef(0);
+  const [colorIndex, setColorIndex] = useState(0);
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const nextColor = HOVER_COLORS[colorIndexRef.current];
-    setBgColor(nextColor);
-    colorIndexRef.current = (colorIndexRef.current + 1) % HOVER_COLORS.length;
-    
     setOrigin('left');
     setIsHovered(true);
+    if (coloredHover) {
+      setColorIndex((prev) => (prev + 1) % HOVER_COLORS.length);
+    }
     onMouseEnter?.(e);
   };
 
@@ -38,7 +37,7 @@ export function PremiumPillButton({ children, className = '', onMouseEnter, onMo
       onMouseLeave={handleMouseLeave}
       className={`
         relative overflow-hidden bg-white text-black font-medium 
-        rounded-full px-7 py-3 text-sm md:text-base
+        rounded-full px-8 py-3.5 md:px-9 md:py-4 text-base md:text-lg
         shadow-[0_4px_14px_rgba(0,0,0,0.1)]
         transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
         hover:-translate-y-[2px] hover:scale-[1.02] hover:shadow-[0_6px_20px_rgba(255,255,255,0.15)]
@@ -49,14 +48,20 @@ export function PremiumPillButton({ children, className = '', onMouseEnter, onMo
       {...props}
     >
       <div 
-        className="absolute inset-0 z-0 transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        className={`absolute inset-0 z-0 transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${!coloredHover ? 'bg-black' : ''}`}
         style={{
-          backgroundColor: bgColor,
           transformOrigin: origin,
-          transform: isHovered ? 'scaleX(1)' : 'scaleX(0)'
+          transform: isHovered ? 'scaleX(1)' : 'scaleX(0)',
+          ...(coloredHover && { backgroundColor: HOVER_COLORS[colorIndex] })
         }}
       />
-      <span className="relative z-10 pointer-events-none">{children}</span>
+      <span 
+        className={`relative z-10 pointer-events-none transition-colors duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+          isHovered ? (coloredHover ? 'text-black' : 'text-white') : 'text-black'
+        }`}
+      >
+        {children}
+      </span>
     </button>
   );
 }

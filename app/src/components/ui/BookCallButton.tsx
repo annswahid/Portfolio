@@ -1,9 +1,11 @@
 import { useState, useRef, MouseEvent } from 'react';
 import { motion } from 'framer-motion';
+import { useBooking } from '@/providers/BookingProvider';
 
 export function BookCallButton() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { openBooking } = useBooking();
 
   const handleMouseMove = (e: MouseEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return;
@@ -28,12 +30,7 @@ export function BookCallButton() {
       onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      onClick={() => {
-        const contactSection = document.querySelector('#contact');
-        if (contactSection) {
-          contactSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }}
+      onClick={openBooking}
       className="relative overflow-hidden rounded-full border border-white/20 bg-transparent px-6 py-2.5 text-sm font-medium text-white transition-colors hover:border-white group"
     >
       <span className="relative z-10 flex items-center gap-2 mix-blend-difference text-white">

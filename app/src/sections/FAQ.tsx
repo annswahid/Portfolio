@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
+import { useBooking } from '@/providers/BookingProvider';
 
 const faqs = [
   {
@@ -38,6 +39,7 @@ export default function FAQ() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [ctaHovered, setCtaHovered] = useState(false);
   const ctaRef = useRef<HTMLAnchorElement>(null);
+  const { openBooking } = useBooking();
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ctaRef.current) return;
@@ -51,15 +53,27 @@ export default function FAQ() {
   return (
     <section id="faq" className="py-24 md:py-32 bg-white text-[#111] relative z-10 border-t border-white/5">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16">
+        {/* Giant Section Title */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full select-none pointer-events-none overflow-hidden mb-12 sm:mb-16"
+        >
+          <h2 className="text-[12vw] font-black tracking-tighter text-black/10 uppercase leading-none">
+            FAQ
+          </h2>
+        </motion.div>
         
         {/* Top Section: Title & FAQ List */}
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 mb-24 md:mb-32">
           
           {/* Left Column: Title */}
           <div className="lg:w-5/12 shrink-0">
-            <h2 className="text-5xl md:text-6xl font-medium tracking-tight sticky top-32 leading-[1.1]">
-              Frequently Asked Questions
-            </h2>
+            <h3 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight font-sans sticky top-32 leading-[1.1]">
+              Frequently Asked <br/> Questions
+            </h3>
           </div>
 
           {/* Right Column: FAQs */}
@@ -116,6 +130,10 @@ export default function FAQ() {
         <a 
           ref={ctaRef}
           href="#contact" 
+          onClick={(e) => {
+            e.preventDefault();
+            openBooking();
+          }}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setCtaHovered(true)}
           onMouseLeave={() => setCtaHovered(false)}
